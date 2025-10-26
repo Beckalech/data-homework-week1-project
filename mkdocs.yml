@@ -6,11 +6,11 @@
 # TODO: Update site_description
 # TODO: Update site_author
 
-site_name: Professional Analytics Project
-site_url: https://denisecase.github.io/pro-analytics-02-starter/
-repo_url: https://github.com/denisecase/pro-analytics-02-starter
-site_description: Professional Python project demonstrating industry best practices
-site_author: Denise Case
+site_name: Professional Analytics Project BI and Analytics
+site_url: https://beckalech.github.io/data-homework-week1-project/
+repo_url: https://github.com/Beckalech/data-homework-week1-project.git
+site_description: Professional Python project created for BI and analytics class within MBA program
+site_author: Rebeca Lechleitner
 docs_dir: docs
 site_dir: site
 
