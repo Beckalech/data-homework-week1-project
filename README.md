@@ -182,6 +182,7 @@ This section documents the setup steps I followed for the Smart Sales analytics 
 ### Added Starter Code
 - Created a new file: `src/analytics_project/data_prep.py`
 - Copied code from the [smart-sales-starter-files](https://github.com/denisecase/smart-sales-starter-files) GitHub repo
+- Pasted code into 'src/analytic_project/data_prep.py'
 - Saved the file in the correct folder
 
 ### Ran the Data Prep Module
@@ -189,5 +190,16 @@ This section documents the setup steps I followed for the Smart Sales analytics 
 - Ran the module using:
   ```bash
   uv run python -m analytics_project.data_prep
+- Checked the log file to make sure everything ran.
+- Checked that one DataFrame populated for each raw data file.
 
+### Pushed Changes to Git
+- Used the following commands to push changes.
+```shell
+git add .
+git commit -m "Add starter files"
+git push -u origin main
+```
+- Updated ReadMe with changes and pushed to Git using the above commands with different commit comment.
+  
 
