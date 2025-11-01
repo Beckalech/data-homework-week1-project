@@ -167,4 +167,27 @@ Before starting a new session, remember to do a `git pull` and keep your tools u
 
 Each time forward progress is made, remember to git add-commit-push.
 
+### Smart Sales Project Setup
+
+This section documents the setup steps I followed for the Smart Sales analytics project.
+
+### Project Initialization
+- Cloned the starter repository and created a local folder: `data-homework-week1-project`
+- Opened the project folder in VS Code using **File > Open Folder**
+- Verified presence of:
+  - `README.md` in the root
+  - `data/raw/` folder with CSV files
+  - `.venv` virtual environment folder
+
+### Added Starter Code
+- Created a new file: `src/analytics_project/data_prep.py`
+- Copied code from the [smart-sales-starter-files](https://github.com/denisecase/smart-sales-starter-files) GitHub repo
+- Saved the file in the correct folder
+
+### Ran the Data Prep Module
+- Opened the terminal in the root project folder
+- Ran the module using:
+  ```bash
+  uv run python -m analytics_project.data_prep
+
 
