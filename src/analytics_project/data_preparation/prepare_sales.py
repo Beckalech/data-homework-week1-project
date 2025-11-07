@@ -114,7 +114,8 @@ def handle_missing_values(df: pd.DataFrame) -> pd.DataFrame:
     # Log missing values count before handling
     missing_before = df.isna().sum().sum()
     logger.info(f"Total missing values before handling: {missing_before}")
-
+    df = df.dropna(subset=['transactionid'])  # Drop rows missing critical ID
+    df['transactionid'] = df['transactionid'].fillna('Unknown')
     # TODO: Fill or drop missing values based on business rules
     # Example:
     # df['CustomerName'].fillna('Unknown', inplace=True)
@@ -141,13 +142,53 @@ def remove_outliers(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"FUNCTION START: remove_outliers with dataframe shape={df.shape}")
     initial_count = len(df)
 
-    # TODO: Define numeric columns and apply rules for outlier removal
-    # Example:
-    # df = df[(df['Age'] > 18) & (df['Age'] < 100)]
+    if 'saleamount' in df.columns:
+        df['saleamount'] = pd.to_numeric(df['saleamount'], errors='coerce')
+        df = df.dropna(subset=['saleamount'])
+        df = df[(df['saleamount'] > 300) & (df['saleamount'] < 1600)]
 
     removed_count = initial_count - len(df)
     logger.info(f"Removed {removed_count} outlier rows")
     logger.info(f"{len(df)} records remaining after removing outliers.")
+    return df
+
+    # TODO: Identify numeric columns that might have outliers.
+    # Recommended - just use ranges based on reasonable data
+    # People should not be 22 feet tall, etc.
+    # OPTIONAL ADVANCED: Use IQR method to identify outliers in numeric columns
+    # Example:
+    # for col in ['price', 'weight', 'length', 'width', 'height']:
+    #     if col in df.columns and df[col].dtype in ['int64', 'float64']:
+    #         Q1 = df[col].quantile(0.25)
+    #         Q3 = df[col].quantile(0.75)
+    #         IQR = Q3 - Q1
+    #         lower_bound = Q1 - 1.5 * IQR
+    #         upper_bound = Q3 + 1.5 * IQR
+    #         df = df[(df[col] >= lower_bound) & (df[col] <= upper_bound)]
+    #         logger.info(f"Applied outlier removal to {col}: bounds [{lower_bound}, {upper_bound}]")
+
+
+def standardize_formats(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Standardize the formatting of various columns.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame.
+
+    Returns:
+        pd.DataFrame: DataFrame with standardized formatting.
+    """
+    logger.info(f"FUNCTION START: standardize_formats with dataframe shape={df.shape}")
+
+    # TODO: OPTIONAL ADVANCED Implement standardization for product data
+    # Suggestion: Consider standardizing text fields, units, and categorical variables
+    # Examples (update based on your column names and types):
+    # df['product_name'] = df['product_name'].str.title()  # Title case for product names
+    # df['category'] = df['category'].str.lower()  # Lowercase for categories
+    # df['price'] = df['price'].round(2)  # Round prices to 2 decimal places
+    # df['weight_unit'] = df['weight_unit'].str.upper()  # Uppercase units
+
+    logger.info("Completed standardizing formats")
     return df
 
 
@@ -184,7 +225,7 @@ def main() -> None:
 
     # Clean column names
     original_columns = df.columns.tolist()
-    df.columns = df.columns.str.strip()
+    df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
 
     # Log if any column names changed
     changed_columns = [

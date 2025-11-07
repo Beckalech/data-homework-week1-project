@@ -84,6 +84,8 @@ def save_prepared_data(df: pd.DataFrame, file_name: str) -> None:
 def remove_duplicates(df: pd.DataFrame) -> pd.DataFrame:
     """
     Remove duplicate rows from the DataFrame.
+    How do you decide if a row is duplicated?
+    Which do you keep? Which do you delete?
 
     Args:
         df (pd.DataFrame): Input DataFrame.
@@ -92,18 +94,19 @@ def remove_duplicates(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: DataFrame with duplicates removed.
     """
     logger.info(f"FUNCTION START: remove_duplicates with dataframe shape={df.shape}")
-    initial_count = len(df)
 
-    # TODO: Consider which columns should be used to identify duplicates
-    # Example: For products, SKU or product code is typically unique
-    # So we could do something like this:
-    # df = df.drop_duplicates(subset=['product_code'])
-    df = df.drop_duplicates()
+    # Let's delegate this to the DataScrubber class
+    # First, create an instance of the DataScrubber class
+    # by passing in the dataframe as an argument.
+    df_scrubber = DataScrubber(df)
 
-    removed_count = initial_count - len(df)
-    logger.info(f"Removed {removed_count} duplicate rows")
-    logger.info(f"{len(df)} records remaining after removing duplicates.")
-    return df
+    # Now, call the method on our instance to remove duplicates.
+    # This method will return a new dataframe with duplicates removed.
+    df_deduped = df_scrubber.remove_duplicate_records()
+
+    logger.info(f"Original dataframe shape: {df.shape}")
+    logger.info(f"Deduped  dataframe shape: {df_deduped.shape}")
+    return df_deduped
 
 
 def handle_missing_values(df: pd.DataFrame) -> pd.DataFrame:
@@ -119,24 +122,19 @@ def handle_missing_values(df: pd.DataFrame) -> pd.DataFrame:
     """
     logger.info(f"FUNCTION START: handle_missing_values with dataframe shape={df.shape}")
 
-    # Log missing values by column before handling
-    # NA means missing or "not a number" - ask your AI for details
-    missing_by_col = df.isna().sum()
-    logger.info(f"Missing values by column before handling:\n{missing_by_col}")
+    # Log missing values count before handling
+    missing_before = df.isna().sum().sum()
+    logger.info(f"Total missing values before handling: {missing_before}")
+    df = df.dropna(subset=['productid'])  # Drop rows missing critical ID
+    df['productid'] = df['productid'].fillna('Unknown')
+    # TODO: Fill or drop missing values based on business rules
+    # Example:
+    # df['CustomerName'].fillna('Unknown', inplace=True)
+    # df.dropna(subset=['CustomerID'], inplace=True)
 
-    # TODO: OPTIONAL - We can implement appropriate missing value handling
-    # specific to our data.
-    # For example: Different strategies may be needed for different columns
-    # USE YOUR COLUMN NAMES - these are just examples
-    # df['product_name'].fillna('Unknown Product', inplace=True)
-    # df['description'].fillna('', inplace=True)
-    # df['price'].fillna(df['price'].median(), inplace=True)
-    # df['category'].fillna(df['category'].mode()[0], inplace=True)
-    # df.dropna(subset=['product_code'], inplace=True)  # Remove rows without product code
-
-    # Log missing values by column after handling
-    missing_after = df.isna().sum()
-    logger.info(f"Missing values by column after handling:\n{missing_after}")
+    # Log missing values count after handling
+    missing_after = df.isna().sum().sum()
+    logger.info(f"Total missing values after handling: {missing_after}")
     logger.info(f"{len(df)} records remaining after handling missing values.")
     return df
 
@@ -155,6 +153,14 @@ def remove_outliers(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"FUNCTION START: remove_outliers with dataframe shape={df.shape}")
     initial_count = len(df)
 
+    if 'unitprice' in df.columns:
+        df = df[(df['unitprice'] > 200) & (df['unitprice'] < 800)]
+
+    removed_count = initial_count - len(df)
+    logger.info(f"Removed {removed_count} outlier rows")
+    logger.info(f"{len(df)} records remaining after removing outliers.")
+    return df
+
     # TODO: Identify numeric columns that might have outliers.
     # Recommended - just use ranges based on reasonable data
     # People should not be 22 feet tall, etc.
@@ -169,11 +175,6 @@ def remove_outliers(df: pd.DataFrame) -> pd.DataFrame:
     #         upper_bound = Q3 + 1.5 * IQR
     #         df = df[(df[col] >= lower_bound) & (df[col] <= upper_bound)]
     #         logger.info(f"Applied outlier removal to {col}: bounds [{lower_bound}, {upper_bound}]")
-
-    removed_count = initial_count - len(df)
-    logger.info(f"Removed {removed_count} outlier rows")
-    logger.info(f"{len(df)} records remaining after removing outliers.")
-    return df
 
 
 def standardize_formats(df: pd.DataFrame) -> pd.DataFrame:
@@ -238,9 +239,6 @@ def main() -> None:
 
     input_file = "products_data.csv"
     output_file = "products_prepared.csv"
-
-    # Read raw data
-    df = read_raw_data(input_file)
 
     # Read raw data
     df = read_raw_data(input_file)
