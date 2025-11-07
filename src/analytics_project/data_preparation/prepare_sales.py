@@ -39,31 +39,115 @@ PREPARED_DATA_DIR.mkdir(exist_ok=True)
 # Define Functions - Reusable blocks of code / instructions
 #####################################
 
-# TODO: Complete this by implementing functions based on the logic in the other scripts
-
 
 def read_raw_data(file_name: str) -> pd.DataFrame:
+    """Read raw data from CSV."""
+    file_path: pathlib.Path = RAW_DATA_DIR.joinpath(file_name)
+    try:
+        logger.info(f"READING: {file_path}.")
+        return pd.read_csv(file_path)
+    except FileNotFoundError:
+        logger.error(f"File not found: {file_path}")
+        return pd.DataFrame()  # Return an empty DataFrame if the file is not found
+    except Exception as e:
+        logger.error(f"Error reading {file_path}: {e}")
+        return pd.DataFrame()  # Return an empty DataFrame if any other error occurs
+
+
+def save_prepared_data(df: pd.DataFrame, file_name: str) -> None:
     """
-    Read raw data from CSV.
+    Save cleaned data to CSV.
 
     Args:
-        file_name (str): Name of the CSV file to read.
+        df (pd.DataFrame): Cleaned DataFrame.
+        file_name (str): Name of the output file.
+    """
+    logger.info(
+        f"FUNCTION START: save_prepared_data with file_name={file_name}, dataframe shape={df.shape}"
+    )
+    file_path = PREPARED_DATA_DIR.joinpath(file_name)
+    df.to_csv(file_path, index=False)
+    logger.info(f"Data saved to {file_path}")
+
+
+def remove_duplicates(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Remove duplicate rows from the DataFrame.
+    How do you decide if a row is duplicated?
+    Which do you keep? Which do you delete?
+
+    Args:
+        df (pd.DataFrame): Input DataFrame.
 
     Returns:
-        pd.DataFrame: Loaded DataFrame.
+        pd.DataFrame: DataFrame with duplicates removed.
     """
-    logger.info(f"FUNCTION START: read_raw_data with file_name={file_name}")
-    file_path = RAW_DATA_DIR.joinpath(file_name)
-    logger.info(f"Reading data from {file_path}")
-    df = pd.read_csv(file_path)
-    logger.info(f"Loaded dataframe with {len(df)} rows and {len(df.columns)} columns")
+    logger.info(f"FUNCTION START: remove_duplicates with dataframe shape={df.shape}")
 
-    # TODO: OPTIONAL Add data profiling here to understand the dataset
-    # Suggestion: Log the datatypes of each column and the number of unique values
+    # Let's delegate this to the DataScrubber class
+    # First, create an instance of the DataScrubber class
+    # by passing in the dataframe as an argument.
+    df_scrubber = DataScrubber(df)
+
+    # Now, call the method on our instance to remove duplicates.
+    # This method will return a new dataframe with duplicates removed.
+    df_deduped = df_scrubber.remove_duplicate_records()
+
+    logger.info(f"Original dataframe shape: {df.shape}")
+    logger.info(f"Deduped  dataframe shape: {df_deduped.shape}")
+    return df_deduped
+
+
+def handle_missing_values(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Handle missing values by filling or dropping.
+    This logic is specific to the actual data and business rules.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame.
+
+    Returns:
+        pd.DataFrame: DataFrame with missing values handled.
+    """
+    logger.info(f"FUNCTION START: handle_missing_values with dataframe shape={df.shape}")
+
+    # Log missing values count before handling
+    missing_before = df.isna().sum().sum()
+    logger.info(f"Total missing values before handling: {missing_before}")
+
+    # TODO: Fill or drop missing values based on business rules
     # Example:
-    # logger.info(f"Column datatypes: \n{df.dtypes}")
-    # logger.info(f"Number of unique values: \n{df.nunique()}")
+    # df['CustomerName'].fillna('Unknown', inplace=True)
+    # df.dropna(subset=['CustomerID'], inplace=True)
 
+    # Log missing values count after handling
+    missing_after = df.isna().sum().sum()
+    logger.info(f"Total missing values after handling: {missing_after}")
+    logger.info(f"{len(df)} records remaining after handling missing values.")
+    return df
+
+
+def remove_outliers(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Remove outliers based on thresholds.
+    This logic is very specific to the actual data and business rules.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame.
+
+    Returns:
+        pd.DataFrame: DataFrame with outliers removed.
+    """
+    logger.info(f"FUNCTION START: remove_outliers with dataframe shape={df.shape}")
+    initial_count = len(df)
+
+    # TODO: Define numeric columns and apply rules for outlier removal
+    # Example:
+    # df = df[(df['Age'] > 18) & (df['Age'] < 100)]
+
+    removed_count = initial_count - len(df)
+    logger.info(f"Removed {removed_count} outlier rows")
+    logger.info(f"{len(df)} records remaining after removing outliers.")
     return df
 
 
@@ -109,19 +193,23 @@ def main() -> None:
     if changed_columns:
         logger.info(f"Cleaned column names: {', '.join(changed_columns)}")
 
-    # TODO: Remove duplicates
+    # Remove duplicates
+    df = remove_duplicates(df)
 
-    # TODO:Handle missing values
+    # Handle missing values
+    df = handle_missing_values(df)
 
-    # TODO:Remove outliers
+    # Remove outliers
+    df = remove_outliers(df)
 
-    # TODO:Save prepared data
+    # Save prepared data
+    save_prepared_data(df, output_file)
 
     logger.info("==================================")
     logger.info(f"Original shape: {df.shape}")
     logger.info(f"Cleaned shape:  {original_shape}")
     logger.info("==================================")
-    logger.info("FINISHED prepare_sales_data.py")
+    logger.info("FINISHED prepare_customers_data.py")
     logger.info("==================================")
 
 
