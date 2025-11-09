@@ -201,5 +201,155 @@ git commit -m "Add starter files"
 git push -u origin main
 ```
 - Updated ReadMe with changes and pushed to Git using the above commands with different commit comment.
-  
 
+## Project 3: Data Cleaning and Preparation
+
+### Overview
+This project implements a reusable data cleaning pipeline using a custom `DataScrubber` class to prepare three CSV files (sales, customers, and products) for ETL processing into a central data warehouse.
+
+### File Structure
+```
+src/
+├── utils/
+│   └── data_scrubber.py          # Reusable DataScrubber class
+└── analytics_project/
+    └── data_preparation/
+        └── prepare_all_data.py    # Data preparation pipeline script
+data/
+├── raw/                           # Original CSV files
+│   ├── sales_data.csv
+│   ├── customers_data.csv
+│   └── products_data.csv
+└── cleaned/                       # Cleaned output files
+    ├── sales_data_cleaned.csv
+    ├── customers_data_cleaned.csv
+    └── products_data_cleaned.csv
+```
+
+### DataScrubber Class
+
+The `DataScrubber` class (`src/utils/data_scrubber.py`) provides reusable methods for common data cleaning tasks:
+
+**Key Methods:**
+- `remove_duplicate_records()` - Removes duplicate rows from the DataFrame
+- `handle_missing_data(drop=False, fill_value=None)` - Handles missing values by either dropping rows or filling with a specified value
+- `format_column_strings_to_upper_and_trim(column)` - Converts string column to uppercase and removes whitespace
+- `format_column_strings_to_lower_and_trim(column)` - Converts string column to lowercase and removes whitespace
+- `filter_column_outliers(column, lower_bound, upper_bound)` - Filters rows based on numeric column thresholds
+- `parse_dates_to_add_standard_datetime(column)` - Parses date strings and creates a standardized datetime column
+- `rename_columns(column_mapping)` - Renames columns based on a mapping dictionary
+- `reorder_columns(columns)` - Reorders DataFrame columns
+- `drop_columns(columns)` - Removes specified columns
+- `convert_column_to_new_data_type(column, new_type)` - Converts column data types
+- `check_data_consistency_before_cleaning()` - Reports null counts and duplicate counts before cleaning
+- `check_data_consistency_after_cleaning()` - Validates data after cleaning (asserts no nulls or duplicates)
+
+### Data Preparation Pipeline
+
+The `prepare_all_data.py` script applies the DataScrubber methods to all three data files with customized cleaning steps for each.
+
+**Cleaning Steps Applied:**
+
+#### Sales Data (`sales_data.csv`)
+1. Remove duplicate records
+2. Fill missing values with "N/A"
+3. Convert customerid to uppercase and trim whitespace
+4. Filter outliers: keep only sales between $300 and $1,600
+5. Parse saledate and add StandardDateTime column
+
+**Result:** 2,001 rows → 981 rows (1,020 rows removed by outlier filtering)
+
+#### Customers Data (`customers_data.csv`)
+1. Remove duplicate records
+2. Fill missing values with "Unknown"
+3. Convert customerid to uppercase and trim whitespace
+4. Convert name to uppercase and trim whitespace
+
+**Result:** 201 rows → 201 rows (no rows removed)
+
+#### Products Data (`products_data.csv`)
+1. Remove duplicate records
+2. Fill missing values with "Unknown"
+3. Convert productid to uppercase and trim whitespace
+4. Convert productname to uppercase and trim whitespace
+
+**Result:** 100 rows → 100 rows (no rows removed)
+
+### Running the Data Preparation Script
+
+**Command:**
+```bash
+python src/analytics_project/data_preparation/prepare_all_data.py
+```
+
+**Expected Output:**
+```
+2025-11-09 09:17:03,932 - INFO - STARTING prepare_all_data.py
+2025-11-09 09:17:03,932 - INFO - Loading sales_data.csv
+2025-11-09 09:17:03,936 - INFO - Original shape: (2001, 9)
+2025-11-09 09:17:03,937 - INFO - Standardized column names: [...]
+...
+2025-11-09 09:17:03,947 - INFO - Saved cleaned file to: ...\data\cleaned\sales_data_cleaned.csv
+...
+2025-11-09 09:17:03,979 - INFO - FINISHED prepare_all_data.py
+```
+
+### Column Standardization
+
+All column names are automatically standardized to:
+- Lowercase
+- Underscores instead of spaces
+- Trimmed whitespace
+
+**Example transformations:**
+- `CustomerID` → `customerid`
+- `Sale Date` → `sale_date`
+- `Product Name` → `productname`
+
+### Key Design Decisions
+
+1. **Fill vs. Drop Missing Values:** Chose to fill missing values with meaningful placeholders ("N/A", "Unknown") rather than dropping rows to preserve maximum data for analysis.
+
+2. **Outlier Filtering on Sales:** Applied aggressive outlier filtering (300-1600 range) on sales amounts to remove potentially erroneous transactions, reducing the dataset by ~50%.
+
+3. **String Standardization:** Converted ID and name fields to uppercase for consistency across datasets, facilitating joins in future ETL processes.
+
+4. **Datetime Parsing:** Added a standardized datetime column to sales data to enable time-based analysis and ensure consistent date formatting.
+
+### Testing and Validation
+
+The script includes logging at each step to track:
+- Original data shape
+- Shape changes after each cleaning operation
+- Final output location
+- Any errors encountered
+
+Review the log output to verify cleaning operations performed as expected.
+
+### Next Steps
+
+The cleaned CSV files in `data/cleaned/` are now ready for:
+- ETL processing into a central data warehouse
+- Business intelligence queries
+- Further analysis and visualization
+
+### Issues Encountered and Resolved
+
+1. **Column Name Mismatch:** Initial script referenced `customername` and incorrect column names. Fixed by checking actual standardized column names in log output and updating references to match (`name` for customers, `productname` for products).
+
+2. **Code Formatting:** Resolved Ruff formatting issues by running `ruff format .` before committing.
+
+### Git Workflow
+```bash
+# Format code
+ruff format .
+
+# Stage changes
+git add .
+
+# Commit with descriptive message
+git commit -m "Complete Project 3: Add data scrubber and cleaning pipeline"
+
+# Push to GitHub
+git push
+```
