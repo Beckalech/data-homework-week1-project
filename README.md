@@ -353,3 +353,143 @@ git commit -m "Complete Project 3: Add data scrubber and cleaning pipeline"
 # Push to GitHub
 git push
 ```
+"""
+Creating a Data Warehouse
+
+Project Overview
+----------------
+This project implements a data warehouse using a star schema design to support
+business intelligence and analytics queries. The data warehouse consolidates
+customer, product, and sales transaction data into a centralized repository
+optimized for analytical workloads.
+
+Schema Design
+-------------
+Design Choice: Star Schema
+A star schema was selected for this data warehouse implementation due to its
+simplicity and query performance benefits. The star schema consists of one
+central fact table surrounded by dimension tables, minimizing the complexity
+of joins and optimizing read operations for analytical queries.
+
+Tables
+------
+Fact Table: sales
+The sales table serves as the central fact table, containing quantitative
+measures and foreign keys to dimension tables.
+
+Columns:
+- sale_id (INTEGER, PRIMARY KEY) : Unique identifier for each transaction
+- date (TEXT) : Date of the transaction in ISO 8601 format (YYYY-MM-DD)
+- customer_id (TEXT) : Foreign key reference to customers table
+- product_id (TEXT) : Foreign key reference to products table
+- store_id (TEXT) : Identifier for the store location
+- campaign_id (TEXT) : Identifier for marketing campaign
+- quantity (INTEGER) : Number of items purchased
+- sales_amount (REAL) : Total sales amount for the transaction
+
+Dimension Table: customers
+The customers table contains descriptive attributes about customers.
+
+Columns:
+- customer_id (TEXT, PRIMARY KEY) : Unique identifier for each customer
+- name (TEXT) : Customer name
+- region (TEXT) : Geographic region where customer resides
+- join_date (TEXT) : Date when customer joined in ISO 8601 format
+- age (INTEGER) : Customer age
+- gender (TEXT) : Customer gender
+
+Dimension Table: products
+The products table contains descriptive attributes about products.
+
+Columns:
+- product_id (TEXT, PRIMARY KEY) : Unique identifier for each product
+- product_name (TEXT) : Name of the product
+- category (TEXT) : Product category
+- unit_price (REAL) : Price per unit of the product
+
+Implementation Details
+----------------------
+Technology Stack:
+- Database: SQLite
+- Programming Language: Python 3.12
+- Key Libraries:
+  * pandas (data manipulation and loading)
+  * sqlite3 (database connectivity)
+  * pathlib (file path management)
+
+ETL Process
+-----------
+The ETL (Extract, Transform, Load) process is implemented in
+src/analytics_project/etl_to_dw.py and performs the following operations:
+
+- Schema Creation: Creates the customers, products, and sales tables if they do not exist
+- Data Extraction: Reads prepared CSV files from the data/prepared/ directory
+- Data Transformation:
+    * Renames columns from CSV format to match database schema conventions
+      (lowercase with underscores)
+    * Selects only relevant columns for each table
+    * Ensures data types are compatible with the schema
+- Data Loading: Inserts transformed data into the corresponding database tables
+  using pandas .to_sql() method
+
+File Structure
+--------------
+data-homework-week1-project/
+├── data/
+│   ├── prepared/
+│   │   ├── customers_prepared.csv
+│   │   ├── products_prepared.csv
+│   │   └── sales_prepared.csv
+│   └── dw/
+│       └── my_datawarehouse.db
+├── src/
+│   └── analytics_project/
+│       └── etl_to_dw.py
+└── README.md
+
+Data Naming Conventions
+-----------------------
+- Table names: Lowercase and pluralized (e.g., customers, products, sales)
+- Column names: Lowercase with underscores separating words (e.g., customer_id, join_date)
+- Date format: ISO 8601 format (YYYY-MM-DD) stored as TEXT for SQLite compatibility
+
+Running the ETL Script
+----------------------
+To populate the data warehouse:
+
+1. Ensure you are in the project root directory
+2. Activate the virtual environment (if applicable)
+3. Run the ETL script:
+
+   python src/analytics_project/etl_to_dw.py
+
+The script will output progress messages:
+- Creating schema...
+- Deleting existing records...
+- Loading CSV files...
+- Inserting customers...
+- Inserting products...
+- Inserting sales...
+- Data warehouse loaded successfully!
+
+Validation
+----------
+The data warehouse was validated using the SQLite Viewer extension in VS Code.
+All three tables (customers, products, sales) were verified to contain the
+correct data with proper relationships maintained through foreign keys.
+
+Challenges Encountered
+----------------------
+- Foreign Key Syntax Error: Initial schema creation encountered syntax errors
+  with FOREIGN KEY constraints in SQLite. Resolved by using executescript()
+  method instead of execute() for multiple CREATE TABLE statements.
+- Column Name Mismatch: CSV files used different naming conventions (CamelCase)
+  than the database schema (lowercase with underscores). Resolved by
+  implementing column renaming in the insert functions using pandas .rename().
+- Duplicate Primary Key Error: Encountered UNIQUE constraint violations when
+  re-running the script with existing data. Resolved by either deleting the
+  database file or implementing DROP TABLE statements before schema creation.
+- File Path Issues: Initial CSV import attempts in SQLite command line
+  encountered file path resolution issues. Resolved by implementing Python-based
+  ETL with pathlib for cross-platform file path management.
+"""
