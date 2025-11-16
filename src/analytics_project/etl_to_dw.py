@@ -1,7 +1,8 @@
-import pandas as pd
-import sqlite3
 import pathlib
+import sqlite3
 import sys
+
+import pandas as pd
 
 # For local imports, temporarily add project root to sys.path
 PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -16,7 +17,6 @@ PREPARED_DATA_DIR = pathlib.Path("data").joinpath("prepared")
 
 def create_schema(cursor: sqlite3.Cursor) -> None:
     """Create tables in the data warehouse if they don't exist."""
-
     cursor.executescript("""
         CREATE TABLE IF NOT EXISTS customers (
             customer_id TEXT PRIMARY KEY,
@@ -31,7 +31,9 @@ def create_schema(cursor: sqlite3.Cursor) -> None:
             product_id TEXT PRIMARY KEY,
             product_name TEXT,
             category TEXT,
-            unit_price REAL
+            unit_price REAL,
+            cost_of_good REAL,
+            warehouse_id TEXT
         );
 
         CREATE TABLE IF NOT EXISTS sales (
@@ -61,12 +63,12 @@ def insert_customers(customers_df: pd.DataFrame, cursor: sqlite3.Cursor) -> None
     # Rename columns to match database schema (lowercase with underscores)
     customers_df = customers_df.rename(
         columns={
-            'CustomerID': 'customer_id',
-            'Name': 'name',
-            'Region': 'region',
-            'JoinDate': 'join_date',
-            'Age': 'age',
-            'Gender': 'gender',
+            "CustomerID": "customer_id",
+            "Name": "name",
+            "Region": "region",
+            "JoinDate": "join_date",
+            "Age": "age",
+            "Gender": "gender",
         }
     )
     customers_df.to_sql("customers", cursor.connection, if_exists="append", index=False)
@@ -77,14 +79,18 @@ def insert_products(products_df: pd.DataFrame, cursor: sqlite3.Cursor) -> None:
     # Rename columns to match database schema
     products_df = products_df.rename(
         columns={
-            'productid': 'product_id',
-            'productname': 'product_name',
-            'category': 'category',
-            'unitprice': 'unit_price',
+            "productid": "product_id",
+            "productname": "product_name",
+            "category": "category",
+            "unitprice": "unit_price",
+            "costofgood": "cost_of_good",
+            "warehouseid": "warehouse_id",
         }
     )
     # Select only the columns we need (excluding costofgood and warehouseid)
-    products_df = products_df[['product_id', 'product_name', 'category', 'unit_price']]
+    products_df = products_df[
+        ["product_id", "product_name", "category", "unit_price", "cost_of_good", "warehouse_id"]
+    ]
     products_df.to_sql("products", cursor.connection, if_exists="append", index=False)
 
 
@@ -93,27 +99,27 @@ def insert_sales(sales_df: pd.DataFrame, cursor: sqlite3.Cursor) -> None:
     # Rename columns to match database schema
     sales_df = sales_df.rename(
         columns={
-            'transactionid': 'sale_id',
-            'saledate': 'date',
-            'customerid': 'customer_id',
-            'productid': 'product_id',
-            'storeid': 'store_id',
-            'campaignid': 'campaign_id',
-            'qtypurchased': 'quantity',
-            'saleamount': 'sales_amount',
+            "transactionid": "sale_id",
+            "saledate": "date",
+            "customerid": "customer_id",
+            "productid": "product_id",
+            "storeid": "store_id",
+            "campaignid": "campaign_id",
+            "qtypurchased": "quantity",
+            "saleamount": "sales_amount",
         }
     )
     # Select only the columns we need (excluding saletime)
     sales_df = sales_df[
         [
-            'sale_id',
-            'date',
-            'customer_id',
-            'product_id',
-            'store_id',
-            'campaign_id',
-            'quantity',
-            'sales_amount',
+            "sale_id",
+            "date",
+            "customer_id",
+            "product_id",
+            "store_id",
+            "campaign_id",
+            "quantity",
+            "sales_amount",
         ]
     ]
     sales_df.to_sql("sales", cursor.connection, if_exists="append", index=False)

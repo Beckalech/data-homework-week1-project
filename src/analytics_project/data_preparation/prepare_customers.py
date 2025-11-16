@@ -1,3 +1,6 @@
+"""Module for preparing all data for the analytics project.
+Includes functions to clean, transform, and save prepared datasets.
+"""  # noqa: D205
 #####################################
 # Import Modules at the Top
 #####################################
@@ -13,11 +16,9 @@ import pandas as pd
 sys.path.append(str(pathlib.Path(__file__).resolve().parent.parent.parent))
 
 # Import local modules (e.g. utils/logger.py)
-from utils.logger import logger
-
 # Optional: Use a data_scrubber module for common data cleaning tasks
 from utils.data_scrubber import DataScrubber
-
+from utils.logger import logger
 
 # Constants
 SCRIPTS_DATA_PREP_DIR: pathlib.Path = (
@@ -55,8 +56,7 @@ def read_raw_data(file_name: str) -> pd.DataFrame:
 
 
 def save_prepared_data(df: pd.DataFrame, file_name: str) -> None:
-    """
-    Save cleaned data to CSV.
+    """Save cleaned data to CSV.
 
     Args:
         df (pd.DataFrame): Cleaned DataFrame.
@@ -71,8 +71,7 @@ def save_prepared_data(df: pd.DataFrame, file_name: str) -> None:
 
 
 def remove_duplicates(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Remove duplicate rows from the DataFrame.
+    """Remove duplicate rows from the DataFrame.
     How do you decide if a row is duplicated?
     Which do you keep? Which do you delete?
 
@@ -99,8 +98,7 @@ def remove_duplicates(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def handle_missing_values(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Handle missing values by filling or dropping.
+    """Handle missing values by filling or dropping.
     This logic is specific to the actual data and business rules.
 
     Args:
@@ -114,8 +112,8 @@ def handle_missing_values(df: pd.DataFrame) -> pd.DataFrame:
     # Log missing values count before handling
     missing_before = df.isna().sum().sum()
     logger.info(f"Total missing values before handling: {missing_before}")
-    df = df.dropna(subset=['CustomerID'])  # Drop rows missing critical ID
-    df['Name'] = df['Name'].fillna('Unknown')
+    df = df.dropna(subset=["CustomerID"])  # Drop rows missing critical ID
+    df["Name"] = df["Name"].fillna("Unknown")
     # TODO: Fill or drop missing values based on business rules
     # Example:
     # df['CustomerName'].fillna('Unknown', inplace=True)
@@ -129,8 +127,7 @@ def handle_missing_values(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def remove_outliers(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Remove outliers based on thresholds.
+    """Remove outliers based on thresholds.
     This logic is very specific to the actual data and business rules.
 
     Args:
@@ -142,8 +139,8 @@ def remove_outliers(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"FUNCTION START: remove_outliers with dataframe shape={df.shape}")
     initial_count = len(df)
 
-    if 'Age' in df.columns:
-        df = df[(df['Age'] > 25) & (df['Age'] < 70)]
+    if "Age" in df.columns:
+        df = df[(df["Age"] > 25) & (df["Age"] < 70)]
 
     removed_count = initial_count - len(df)
     logger.info(f"Removed {removed_count} outlier rows")
@@ -157,9 +154,7 @@ def remove_outliers(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def main() -> None:
-    """
-    Main function for processing customer data.
-    """
+    """Main function for processing customer data."""
     logger.info("==================================")
     logger.info("STARTING prepare_customers_data.py")
     logger.info("==================================")

@@ -1,6 +1,12 @@
+"""
+Module for preparing all data for the analytics project.
+Includes functions to clean, transform, and save prepared datasets.
+"""
+
 import pathlib
-import pandas as pd
 import sys
+
+import pandas as pd
 
 # Add project root to sys.path for local imports
 sys.path.append(str(pathlib.Path(__file__).resolve().parent.parent.parent))
@@ -28,7 +34,7 @@ def clean_and_save(file_name: str, cleaning_steps: list):
     original_shape = df.shape
     logger.info(f"Original shape: {original_shape}")
 
-    df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
+    df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
     logger.info(f"Standardized column names: {list(df.columns)}")
 
     scrubber = DataScrubber(df)
@@ -43,8 +49,24 @@ def clean_and_save(file_name: str, cleaning_steps: list):
     print(f"final dataframe shape: {scrubber.df.shape}")
     logger.info(f"Saved cleaned file to: {output_path}")
 
+    """
+    Clean a raw CSV file and save the cleaned version.
+
+    Args:
+        file_name (str): Name of the raw CSV file to clean.
+        cleaning_steps (list): List of cleaning functions or operations to apply.
+
+    Returns:
+        None: Writes the cleaned CSV file to the CLEANED_DATA_DIR.
+    """
+
 
 def main():
+    """Entry point for the data preparation script.
+
+    Logs the start of execution and coordinates the cleaning and saving
+    of raw data files into prepared datasets for the analytics project.
+    """
     logger.info("STARTING prepare_all_data.py")
 
     clean_and_save(

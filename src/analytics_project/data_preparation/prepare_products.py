@@ -13,11 +13,9 @@ import pandas as pd
 sys.path.append(str(pathlib.Path(__file__).resolve().parent.parent.parent))
 
 # Import local modules (e.g. utils/logger.py)
-from utils.logger import logger
-
 # Optional: Use a data_scrubber module for common data cleaning tasks
 from utils.data_scrubber import DataScrubber
-
+from utils.logger import logger
 
 # Constants
 SCRIPTS_DATA_PREP_DIR: pathlib.Path = (
@@ -41,8 +39,7 @@ PREPARED_DATA_DIR.mkdir(exist_ok=True)
 
 
 def read_raw_data(file_name: str) -> pd.DataFrame:
-    """
-    Read raw data from CSV.
+    """Read raw data from CSV.
 
     Args:
         file_name (str): Name of the CSV file to read.
@@ -66,8 +63,7 @@ def read_raw_data(file_name: str) -> pd.DataFrame:
 
 
 def save_prepared_data(df: pd.DataFrame, file_name: str) -> None:
-    """
-    Save cleaned data to CSV.
+    """Save cleaned data to CSV.
 
     Args:
         df (pd.DataFrame): Cleaned DataFrame.
@@ -82,8 +78,7 @@ def save_prepared_data(df: pd.DataFrame, file_name: str) -> None:
 
 
 def remove_duplicates(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Remove duplicate rows from the DataFrame.
+    """Remove duplicate rows from the DataFrame.
     How do you decide if a row is duplicated?
     Which do you keep? Which do you delete?
 
@@ -110,8 +105,7 @@ def remove_duplicates(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def handle_missing_values(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Handle missing values by filling or dropping.
+    """Handle missing values by filling or dropping.
     This logic is specific to the actual data and business rules.
 
     Args:
@@ -125,8 +119,8 @@ def handle_missing_values(df: pd.DataFrame) -> pd.DataFrame:
     # Log missing values count before handling
     missing_before = df.isna().sum().sum()
     logger.info(f"Total missing values before handling: {missing_before}")
-    df = df.dropna(subset=['productid'])  # Drop rows missing critical ID
-    df['productid'] = df['productid'].fillna('Unknown')
+    df = df.dropna(subset=["productid"])  # Drop rows missing critical ID
+    df["productid"] = df["productid"].fillna("Unknown")
     # TODO: Fill or drop missing values based on business rules
     # Example:
     # df['CustomerName'].fillna('Unknown', inplace=True)
@@ -140,8 +134,7 @@ def handle_missing_values(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def remove_outliers(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Remove outliers based on thresholds.
+    """Remove outliers based on thresholds.
     This logic is very specific to the actual data and business rules.
 
     Args:
@@ -153,8 +146,8 @@ def remove_outliers(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"FUNCTION START: remove_outliers with dataframe shape={df.shape}")
     initial_count = len(df)
 
-    if 'unitprice' in df.columns:
-        df = df[(df['unitprice'] > 200) & (df['unitprice'] < 800)]
+    if "unitprice" in df.columns:
+        df = df[(df["unitprice"] > 200) & (df["unitprice"] < 800)]
 
     removed_count = initial_count - len(df)
     logger.info(f"Removed {removed_count} outlier rows")
@@ -178,8 +171,7 @@ def remove_outliers(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def standardize_formats(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Standardize the formatting of various columns.
+    """Standardize the formatting of various columns.
 
     Args:
         df (pd.DataFrame): Input DataFrame.
@@ -202,8 +194,7 @@ def standardize_formats(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def validate_data(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Validate data against business rules.
+    """Validate data against business rules.
 
     Args:
         df (pd.DataFrame): Input DataFrame.
@@ -225,9 +216,7 @@ def validate_data(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def main() -> None:
-    """
-    Main function for processing product data.
-    """
+    """Main function for processing product data."""
     logger.info("==================================")
     logger.info("STARTING prepare_products_data.py")
     logger.info("==================================")
@@ -252,7 +241,7 @@ def main() -> None:
 
     # Clean column names
     original_columns = df.columns.tolist()
-    df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
+    df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
 
     # Log if any column names changed
     changed_columns = [

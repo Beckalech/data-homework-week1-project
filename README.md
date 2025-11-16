@@ -376,6 +376,7 @@ Tables
 Fact Table: sales
 The sales table serves as the central fact table, containing quantitative
 measures and foreign keys to dimension tables.
+Tables were created using the script found in et_to_dw.py.
 
 Columns:
 - sale_id (INTEGER, PRIMARY KEY) : Unique identifier for each transaction
@@ -386,6 +387,9 @@ Columns:
 - campaign_id (TEXT) : Identifier for marketing campaign
 - quantity (INTEGER) : Number of items purchased
 - sales_amount (REAL) : Total sales amount for the transaction
+
+[sales table in DB](/Images/Salestableindb.png)
+
 
 Dimension Table: customers
 The customers table contains descriptive attributes about customers.
@@ -398,6 +402,8 @@ Columns:
 - age (INTEGER) : Customer age
 - gender (TEXT) : Customer gender
 
+[Customer table in DB](Images/CustomerTableInDb.png)
+
 Dimension Table: products
 The products table contains descriptive attributes about products.
 
@@ -406,6 +412,10 @@ Columns:
 - product_name (TEXT) : Name of the product
 - category (TEXT) : Product category
 - unit_price (REAL) : Price per unit of the product
+- cost_of_good (REAL) : Price per unit require to create product
+- warehouse_id (TEXT) : Identifies where the product is being stored
+
+[product table in DB](Images/ProductTableInDb.png)
 
 Implementation Details
 ----------------------
