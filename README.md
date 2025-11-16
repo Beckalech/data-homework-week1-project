@@ -388,7 +388,7 @@ Columns:
 - quantity (INTEGER) : Number of items purchased
 - sales_amount (REAL) : Total sales amount for the transaction
 
-[sales table in DB](Images/Salestableindb.png)
+[sales table in DB](Images/salesTableInDb.png)
 
 
 Dimension Table: customers
