@@ -503,3 +503,32 @@ Challenges Encountered
   encountered file path resolution issues. Resolved by implementing Python-based
   ETL with pathlib for cross-platform file path management.
 """
+
+### Analyzing Data
+
+1. *Load data warehouse to ODBC
+2. *Connect ODBC data to PowerBI
+3. *Use the following SQL query to create a list of amount spent by customer
+   This query connects to the `SmartSalesDSN` ODBC source and retrieves customer spending information. It joins the **sales** and **customers** tables, calculates the total amount spent per customer, and orders the results by highest spend.
+
+```powerquery
+let
+    Source = Odbc.DataSource("dsn=SmartSalesDSN"),
+    QueryResult = Value.NativeQuery(
+        Source,
+        "
+        SELECT
+            c.name,
+            SUM(s.sales_amount) AS total_spent,
+            s.product_ID,
+            s.campaign_ID,
+            s.date
+        FROM sales s
+        JOIN customers c ON s.customer_id = c.customer_id
+        GROUP BY c.name
+        ORDER BY total_spent DESC;
+        "
+    )
+in
+    QueryResult
+4.*Once connected add visualization that explain the data. 
