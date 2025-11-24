@@ -531,4 +531,7 @@ let
     )
 in
     QueryResult
-4.*Once connected add visualization that explain the data. 
+4.*Once connected add visualization that explain the data.
+[PowerBi Slicing](images/Slicing.png)
+[PowerBi Dicing](images/MatrixDicing.png)
+[PowerBI DrillDown](images/DrillDown.png)
