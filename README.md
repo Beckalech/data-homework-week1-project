@@ -535,3 +535,47 @@ in
 [PowerBi Slicing](images/Slicing.png)
 [PowerBi Dicing](images/MatrixDicing.png)
 [PowerBI DrillDown](images/DrillDown.png)
+
+# Using OLAP to Visualize Data
+
+## Section 1. Business Goal
+The goal is to identify how much money customers are spending based on their demographics in order to better direct marketing focus.
+
+## Section 2. Data Source
+The following tables were used from the data warehouse:
+- **Sales**: `sale_date`, `product_id`, `sales_amount`, `customer_id`
+- **Products**: `product_id`, `product_name`
+- **Customers**: `customer_id`, `age`, `region`, `gender`
+
+## Section 3. Tools
+- **Power BI** was used to complete the analysis.
+- Python was attempted for OLAP cubing, but due to coding challenges, Power BI was chosen as the primary tool.
+- Peer work indicated Power BI was a common choice for this type of visualization.
+
+## Section 4. Workflow & Logic
+- Aggregated the **amount spent** so that it was summed across demographics per product.
+- **Dimensions**: customer attributes such as age, gender, and region.
+- **Date**: available for slicing, though in this dataset all sales occurred on the same day.
+- When using graphical tools like Power BI or Tableau Prep, screenshots are recommended to illustrate the workflow.
+
+## Section 5. Results
+- Customers purchasing **electronics** spent the most money in the **West region**.
+- Within that group, **44‑year‑old men** accounted for the highest spending.
+
+## Section 6. Suggested Business Action
+- Focus on the product with the **highest spending**.
+- Drill into the data to identify where spending is concentrated and which demographics are driving it.
+- Recommend marketing efforts such as **loyalty programs** targeted at these high‑value demographics.
+- Research shows that customers who are already highly satisfied and engaged statistically spend significantly more.
+
+### Visuals
+![Summary of product sales data](images/marketing%20summary.png)
+![Sales drilldown to region](images/marketing%20region%20drilldown.png)
+![Sales drilldown to gender](images/Marketing%20gender%20drilldown.png)
+![Sales drilldown to age](images/Marketing%20age%20drilldown.png)
+
+## Section 7. Challenges
+- Struggled with creating the desired **drill‑down visualizations**.
+- Consulted YouTube tutorials, which suggested creating a new visual using the target table.
+- This approach helped resolve the issue and improve the analysis.
+
