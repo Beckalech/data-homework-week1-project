@@ -579,3 +579,87 @@ The following tables were used from the data warehouse:
 - Consulted YouTube tutorials, which suggested creating a new visual using the target table.
 - This approach helped resolve the issue and improve the analysis.
 
+## Putting building a business report in practice
+# Section 1. The Business Goal
+Identify the highest spending customer segment of people in an effort to improve target campaigns.
+
+---
+
+# Section 2. Data Source
+The data warehouse accessible through ODBC.
+
+---
+
+# Section 3. Tools Used
+- ODBC
+- VS Code
+- Power BI
+
+---
+
+# Section 4. Workflow & Logic
+The data was first in a CSV format. It was cleansed in an earlier process using VS Code and Python programs. Using VS Code and a Python program, a data warehouse was created. The data warehouse was accessed through ODBC. These processes have been documented in earlier sections of the README.
+
+Within Power BI, I created new columns that utilized DAX formulas to calculate total revenue and categorized the ages into group categories.
+
+### Descriptive Dimensions
+List the dimensions you will analyze and why they matter:
+
+- **Age Group (21-30, 31-40, 41-50, 51-60, 61-70)**
+  By understanding the age groups’ spending, we can determine how to best market a product to the biggest spending segment. Marketing to a 20-year-old looks like social media ads, while it might not for other age groups.
+
+- **Gender**
+  This is of similar importance as the age group. Finding how each gender spends will help a business determine how marketing should focus efforts.
+
+- **Region (North, South, East, West, South-West)**
+  Identifying where the highest spending is occurring can help the business determine where to focus marketing effort, especially physical marketing as that needs to exist in a location.
+
+### Numeric Metrics
+List the metrics you will calculate and why they are important:
+
+- **Total spent on products** – Necessary for identifying how much is spent by each customer segment.
+- **Qty purchased during each sale** – Important for standardizing the data and performing calculations.
+- **Cost of goods** – Needed to calculate profit.
+- **Sale price** – Needed to calculate revenue and understand how much customers are willing to spend.
+
+### Aggregations
+- Total revenue gained per each customer segment.
+- Sum of amount spent per each customer segment.
+
+### Slicing and Dicing
+- **Slicing**: The sum of sales displayed for one date of sale.
+- **Dicing**: The sum of sales from a specific date filtered by age groups.
+
+### Drilldown
+- Drill from **Age Group → Gender → Region**
+
+### Charts/Graphs Used
+- **Clustered Column Charts** – To visualize the sum of spending by each customer segment.
+- **Matrix Table** – To easily see the values spent by each customer and which demographic they fit into.
+- **Card with a slicer** – To show the total revenue for each customer segment.
+
+---
+
+# Section 5. Results (Narrative + Visualizations)
+The highest amount of spending was seen when looking at the stacked bar graph. It was found to be the **51-60 year olds, males, in the East region**. This can be found from using the slicers to display only the specific customer segments’ sales and revenue on a card.
+
+---
+
+# Section 6. Suggested Business Action
+The majority of profit comes from the most loyal customers. Assume that the highest spenders are the most loyal customers. Marketing actions can be targeted towards those high-spending demographics.
+
+Using focus groups, the business should identify what appeals to **51-60 year old men in the East**. This may look like loyalty rewards for spending over significant amounts of money, such as teaming with places like **PGA golf courses** to host customer appreciation events.
+
+---
+
+# Section 7. Challenges
+*Finding the correct DAX formula to process the data. Uncovering the best way to visualize the data.*
+
+---
+
+# Section 8. Ethical Considerations
+*Marketing could be morally wrong because it plays with the emotions of people to sell a product. Isolating a group to make them feel good in order to encourage better profits could be unethical. No names are used in the report, so privacy is relatively secure*
+
+[main dashboard](images/Mod7generaldashboard.png)
+[matrix table](images/mod7matrixtable.png)
+
